@@ -23,7 +23,6 @@ def checkRootExists(lBound, rBound):
 
     return returnVal
 
-
 def bisectionMethod(lBound, rBound, tolerance, maxIterations, rootFunc):
     # Initialize Variables
     midpoint = 0
@@ -42,7 +41,7 @@ def bisectionMethod(lBound, rBound, tolerance, maxIterations, rootFunc):
 
     # check tolerances
     while ((relError > tolerance) and (iterations < maxIterations)):
-        #print(relError * 100, "%")
+        # Increment Iterations
         iterations += 1
 
         # Get Midpoint
@@ -69,11 +68,55 @@ def bisectionMethod(lBound, rBound, tolerance, maxIterations, rootFunc):
     # Return Array of values [L, R, midpoint, funcMidpoint, iterations, error]
     return [xLeft, xRight, midpoint, value, iterations, (relError * 100)]
    
-
-
 def falsePositionMethod(lBound, rBound, tolerance, maxIterations, rootFunc):
-    # False position method implementation
-    pass
+    # Initialize Variables
+    root = 0
+    rootFuncValue = 0
+    previousRoot = 0
+
+    # Set initial bounds
+    xLeft = lBound
+    xRight = rBound
+
+    # iterations counter
+    iterations = 0
+    
+    # Check Error
+    relError = abs(xRight - xLeft)
+
+    # check tolerances
+    while ((relError > tolerance) and (iterations < maxIterations)):
+        # Increment Iterations
+        iterations += 1
+
+        # Calculate function values at bounds
+        funcValRight = rootFunc(xRight)
+        funcValLeft = rootFunc(xLeft)
+
+        # Approximate root using false position formula
+        root = xRight - ((funcValRight * (xLeft - xRight)) / (funcValLeft - funcValRight))
+
+        # Calculate value at iteration value
+        rootFuncValue = rootFunc(root)
+
+        # Update bounds based on sign of function at root
+        if ((funcValLeft * rootFuncValue) < 0):
+            xRight = root 
+        elif ((funcValLeft * rootFuncValue) > 0):
+            xLeft = root
+        else:
+            # Root is found
+            break
+
+        # Check Relitive Error
+        if ((iterations > 1) and (root != 0)):
+            relError = abs(root - previousRoot) / abs(root)
+
+        # Save previous midpoint
+        previousRoot = root
+
+    # Return Array of values [L, R, root, rootFunctionValue, iterations, error]
+    return [xLeft, xRight, root, rootFuncValue, iterations, (relError * 100)]
 
 
 def main():
@@ -85,7 +128,7 @@ def main():
     rBound = 1  # From graphical estimation on assignment doc
 
     # Tolerance and max iterations
-    tolerance = 0.1 # 10% relitive error allowed
+    tolerance = 0.01 # 10% relitive error allowed
     maxIterations = 20
 
     # true: root exists, false: root may exist, none: root is lower bound
@@ -101,23 +144,22 @@ def main():
         
         # Print Results
         print(f"Bisection Method Results - Bounds: [{lBound}, {rBound}]")    
-        print("Root Estimate \t f(Root) \t\t Iterations \t Relative Error (%)")
-        print(bisectionList[2], "\t", bisectionList[3], "\t", bisectionList[4], "\t\t", bisectionList[5])
+        print("Root Estimate \t f(Root) \t Iterations \t Relative Error (%)")
+        print(round(bisectionList[2], 4), "\t", round(bisectionList[3], 4), "\t", round(bisectionList[4], 4), "\t\t", round(bisectionList[5], 4))
 
 
         # Call false position method Args (L, R, Tolerance, Max Iterations)
         # Return Array of values [L, R, midpoint, funcMidpoint, iterations, error]
-        #falsePosList = falsePositionMethod(lBound, rBound, tolerance, maxIterations, rootFunc)
+        falsePosList = falsePositionMethod(lBound, rBound, tolerance, maxIterations, rootFunc)
             # Return Array of values [L, R, midpoint, function(midpoint), error]
 
         # Print Results
-        #print(f"False Position Results - Bounds: [{lBound}, {rBound}]")    
-        #print("Root Estimate \t f(Root) \t\t Iterations \t Relative Error (%)")
-        #print(falsePosList[2], "\t", falsePosList[3], "\t", falsePosList[4], "\t\t", falsePosList[5])
+        print(f"\n\nFalse Position Results - Bounds: [{lBound}, {rBound}]")    
+        print("Root Estimate \t f(Root) \t Iterations \t Relative Error (%)")
+        print(round(falsePosList[2], 4), "\t\t", round(falsePosList[3], 4), "\t", round(falsePosList[4], 4), "\t\t", round(falsePosList[5], 4))
 
     else: #
         print("Root is: ", lBound)
-
 
 # Main End
 
