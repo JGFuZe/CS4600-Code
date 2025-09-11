@@ -128,7 +128,7 @@ def main():
     rBound = 1  # From graphical estimation on assignment doc
 
     # Tolerance and max iterations
-    tolerance = 0.01 # 10% relitive error allowed
+    tolerance = 0.1 # 10% relitive error allowed
     maxIterations = 20
 
     # true: root exists, false: root may exist, none: root is lower bound
