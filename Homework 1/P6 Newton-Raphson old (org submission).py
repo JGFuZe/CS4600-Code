@@ -31,6 +31,7 @@ def checkRootExists(lBound, rBound):
 def newtonMethod(lBound, rBound, tolerance, maxIterations, rootFunc, rootDeriv):
     # Initialize Variables (match the style of the original methods)
     root = (lBound + rBound) / 2   # use midpoint of the given bounds as the initial guess
+    previousRoot = 0
     rootFuncValue = 0
 
     # iterations counter
@@ -44,21 +45,22 @@ def newtonMethod(lBound, rBound, tolerance, maxIterations, rootFunc, rootDeriv):
         # Increment Iterations
         iterations += 1
 
-        fValue = rootFunc(root)
-        dfValue = rootDeriv(root)
+        f_val = rootFunc(root)
+        df_val = rootDeriv(root)
 
         # Prevent division by zero
-        if (dfValue == 0):
+        if (df_val == 0):
             break
 
         # Newton update
-        nextRoot = root - (fValue / dfValue)
+        nextRoot = root - (f_val / df_val)
 
         # Check Relitive Error
         if ((iterations > 0) and (nextRoot != 0)):
             relError = abs(nextRoot - root) / abs(nextRoot)
 
         # Save previous and update current
+        previousRoot = root
         root = nextRoot
 
     # Final values
@@ -68,35 +70,32 @@ def newtonMethod(lBound, rBound, tolerance, maxIterations, rootFunc, rootDeriv):
     return [lBound, rBound, root, rootFuncValue, iterations, (relError * 100)]
 
 def main():
-    # List of initial guess intervals
-    guessIntervals = [
-        [-1.75, 0],
-        [0, 1.5], # Worked
-        [1.5, 2], # Worked
-        [2, 2.5],
-        [2.6, 3.5] # Worked
-    ]
+    newtonList = []
 
-    tolerance = 0.1  # 10% relative error allowed
+    # Bounding values L and R (from graphical estimation on assignment doc)
+    lBound = 3   # near the largest positive root
+    rBound = 4   # near the largest positive root
+
+    # Tolerance and max iterations (keep look-and-feel consistent with your template)
+    tolerance = 0.1  # 10% relitive error allowed
     maxIterations = 20
 
-    rootsFound = []
+    # true: root exists, false: root may exist, none: root is lower bound
+    rootSign = checkRootExists(lBound, rBound)
 
-    for interval in guessIntervals:
-        lBound, rBound = interval
-        rootSign = checkRootExists(lBound, rBound)
-        if (rootSign < 0):
-            result = newtonMethod(lBound, rBound, tolerance, maxIterations, rootFunc, rootDeriv)
-            rootsFound.append(result)
-        elif (rootSign == 0):
-            # Root is exactly at lBound
-            rootsFound.append([lBound, rBound, lBound, rootFunc(lBound), 0, 0])
-        # else: no root in this interval
+    # If root exists per the sign check, proceed (keeps the same control flow as your file)
+    if (rootSign < 0):
+        # Call Newton-Raphson method Args (L, R, Tolerance, Max Iterations)
+        # Return Array of values [L, R, root, rootFunctionValue, iterations, error]
+        newtonList = newtonMethod(lBound, rBound, tolerance, maxIterations, rootFunc, rootDeriv)
 
-    print("Newton-Raphson Results for All Initial Guesses:")
-    print("Interval\tRoot Estimate\tf(Root)\t\tIterations\tRelative Error (%)")
-    for res in rootsFound:
-        print(f"[{res[0]}, {res[1]}]\t{round(res[2], 4)}\t\t{round(res[3], 4)}\t\t{res[4]}\t\t{round(res[5], 4)}")
+        # Print Results — same format/columns as your original prints
+        print(f"Newton-Raphson Results - Bounds: [{lBound}, {rBound}]")
+        print("Root Estimate \t f(Root) \t Iterations \t Relative Error (%)")
+        print(round(newtonList[2], 4), "\t\t", round(newtonList[3], 4), "\t", round(newtonList[4], 4), "\t\t", round(newtonList[5], 4))
+
+    else:  #
+        print("Root is: ", lBound)
 
 # Main End
 
